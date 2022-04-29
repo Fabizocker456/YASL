@@ -7,7 +7,7 @@ var wait = (s)=>{
 }
 
 var funcs = {
-"wait":a=>wait(a.a[1]),
+"wait":a=>wait(a.a[0]),
 "print":a=>{console.log(chalk.yellow(a.a.join('')));return a.a.join('')},
 "raw":a=>(a.a[0]),
 "math":a=>{

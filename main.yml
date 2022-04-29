@@ -1,21 +1,4 @@
 -
- action: print
- args: ["Hello, World!"]
-
--
- action: set
- args:
- - i
- - "fine"
--
- action: print
- args:
- -
-  action: get
-  args:
-  - i
-
--
  action: for
  for:
  - {action: set, args: ["i", 0]}
