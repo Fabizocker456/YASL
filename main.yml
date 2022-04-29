@@ -1,11 +1,34 @@
 -
  action: print
- args: ["ran"]
+ args: ["Hello, World!"]
 
 -
- action: if
- cond: {action: raw, args: [1]}
- if:
- - {action: print, args: ["ok true"]}
- else:
- - {action: print, args: ["not ok false"]}
+ action: set
+ args:
+ - i
+ - "fine"
+-
+ action: print
+ args:
+ -
+  action: get
+  args:
+  - i
+
+-
+ action: for
+ for:
+ - {action: set, args: ["i", 0]}
+ - true
+ -
+  action: set
+  args:
+  - i
+  -
+    action: math
+    args:
+    - "+"
+    - 1
+    - {action: get, args: ["i"]}
+ do:
+ - {action: print, args: [{action: get, args: ["i"]}]}

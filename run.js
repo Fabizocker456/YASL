@@ -1,51 +1,85 @@
 import fs from "fs"
+import chalk from "chalk"
+
+var wait = (s)=>{
+  let now = new Date()
+  while(new Date() - now < 1000*s){}
+}
 
 var funcs = {
-"print":a=>{console.log(a.a.join(''));return a.a.join('')},
+"wait":a=>wait(a.a[1]),
+"print":a=>{console.log(chalk.yellow(a.a.join('')));return a.a.join('')},
 "raw":a=>(a.a[0]),
 "math":a=>{
-    let op = a.a[0]
-    let args=a.a.slice(1)
-    /**/ if(op=="sum"){return args[0] + args[1]}
-    else if(op=="sub"){return args[0] - args[1]}
-    else if(op=="mul"){return args[0] * args[1]}
-    else if(op=="div"){return args[0] / args[1]}
+    let args = a.a.map(i=>i)
+    let op = args.shift();
+    let rs
+         if(op=="+"){rs= args[0] + args[1]}
+    else if(op=="-"){rs= args[0] - args[1]}
+    else if(op=="*"){rs= args[0] * args[1]}
+    else if(op=="/"){rs= args[0] / args[1]}
 
-    else if(op=="mod"){return args[0] % args[1]}
-    else if(op=="exp"){return args[0] ** args[1]}
+    else if(op=="%"){rs= args[0] % args[1]}
+    else if(op=="**"){rs= args[0] ** args[1]}
 
-    else if(op=="min"){return Math.min(...args)}
-    else if(op=="max"){return Math.max(...args)}
+    else if(op=="min"){rs= Math.min(...args)}
+    else if(op=="max"){rs= Math.max(...args)}
 
-    else if(op=="inv"){return 1 / args[0]}
-    else if(op=="neg"){return 0 - args[0]}
+    else if(op=="inv"){rs= 1 / args[0]}
+    else if(op=="neg"){rs= 0 - args[0]}
 
-    else if(op=="pi"){return Math.PI}
-    else if(op=="e"){return Math.E}
+    else if(op=="pi"){rs= Math.PI}
+    else if(op=="e"){rs= Math.E}
 
-    else if(op=="sin"){return Math.sin(args[0]/180*Math.PI)}
-    else if(op=="cos"){return Math.cos(args[0]/180*Math.PI)}
-    else if(op=="tan"){return Math.tan(args[0]/180*Math.PI)}
-  },
-"get":a=>(Object.keys(a.w).includes(a.a[0]) ? a.w[a.a[0]] : null),
+    else if(op=="sin"){rs= Math.sin(args[0]/180*Math.PI)}
+    else if(op=="cos"){rs= Math.cos(args[0]/180*Math.PI)}
+    else if(op=="tan"){rs= Math.tan(args[0]/180*Math.PI)}
+  return rs
+},
+"logic":a=>{
+  let args=a.a.map(a=>a)
+  let op = args.shift()
+  let rs
+       if(op=="=="){rs=args[0]==args[1]}
+  else if(op==">"){rs=args[0]>args[1]}
+  else if(op=="<"){rs=args[0]<args[1]}
+  else if(op=="!"){rs=!args[0]}
+  else if(op=="||"){rs=args[0]||args[1]}
+  else if(op=="&&"){rs=args[0]&&args[1]}
+  else if(op=="^^"){rs=!args[0]^!args[1]}
+  return rs
+},
+"get":a=> {return a.w[a.a[0]]},
 "set":a=>{a.w[a.a[0]]=a.a[1];return a.a[1]},
 "read":a=>(fs.readFileSync(a.a.join(""))),
 "write":a=>(fs.writeFileSync(a.a[0],a.a.slice(1).join("")))
 }
 
+
 var cffuncs = {
-"if":a=>{if(run(a.c["cond"])){if(Object.keys(a.c).includes("if")){return run(a.c["if"])}else{return null}}
-         else{if(Object.keys(a.c).includes("else")){return run(a.c["else"])}else{return null}}}
+"if":a=>{if(run(a.c["if"])){if(Object.keys(a.c).includes("do")){return run(a.c["do"])}else{return null}}
+         else{if(Object.keys(a.c).includes("else")){return run(a.c["else"])}else{return null}}},
+"for":a=>{
+  run(a.c["for"][0])
+  let repeat = true
+  while(1){
+    repeat = run(a.c["for"][1])
+    if(repeat){}else{return}
+    run(a.c["do"])
+    run(a.c["for"][2])
+  }
+}
+
 }
 
 var world = {}
 
 function run(code){
-
   if(Array.isArray(code)){
     return code.map(run)
   }
-  if(!Object.keys(code).includes("action")){return code}
+  if(typeof code != "object"){return code}
+  code = JSON.parse(JSON.stringify(code))
   if(Object.keys(funcs).includes(code["action"])){
     code["args"]= Object.keys(code).includes("args")?run(code["args"]):[]
     return funcs[code["action"]]({a:code["args"],w:world,c:code})
