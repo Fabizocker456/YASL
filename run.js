@@ -33,22 +33,20 @@ var funcs = {
 "write":a=>(fs.writeFileSync(a.a[0],a.a.slice(1).join("")))
 }
 
+var cffuncs = {
+
+}
+
 var world = {}
 
 function run(code){
   if(!Object.keys(code).includes("action")){return code}
+  if(Array.isArray(code)){return code.map(run)}
   if(Object.keys(funcs).includes(code["action"])){
-    for(let i=0;i<code["args"].length;i++){
-      if(Object.keys(code["args"][i]).includes("action")){
-        code["args"][i]=run(code["args"][i])
-      }
-    }
-    return funcs[code["action"]]({a:code["args"],w:world})
-  } else if (["if","while","for","switch"].includes(code["action"])){      if(code["action"]=="if"){
-      if(run(code["cond"])){
-        for(let j=0;j<code["if"].length;j++){run(code["if"][j])}
-      }else{if(Object.keys(code).includes("else")){for(let j=0;j<code["else"].length;j++){run(code["else"][j])}}}
-    }
+    code["args"]= Object.keys(code).includes("args")?run(code["args"]):[]
+    return funcs[code["action"]]({a:code["args"],w:world,c:code})
+  } else if (Object.keys(cffuncs).includes(code["action"])){
+    return cffuncs[code["action"]]({a:code})
   }
 }
 
