@@ -1,6 +1,10 @@
 -
+ action: print
+ args: ["ran"]
+
+-
  action: if
- cond: {action: raw, args: [true]}
+ cond: {action: raw, args: [1]}
  if:
  - {action: print, args: ["ok true"]}
  else:

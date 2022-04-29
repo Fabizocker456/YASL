@@ -8,7 +8,4 @@ const script = fs.readFileSync(loc,'utf8');
 var file = yml.load(script);
 let cur;
 console.log(chalk.blue("running..."))
-for(let i=0;i<file.length;i++){
-  cur=file[i];
-  run.run(cur);
-}
+run.run(file)

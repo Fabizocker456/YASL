@@ -34,19 +34,23 @@ var funcs = {
 }
 
 var cffuncs = {
-
+"if":a=>{if(run(a.c["cond"])){if(Object.keys(a.c).includes("if")){return run(a.c["if"])}else{return null}}
+         else{if(Object.keys(a.c).includes("else")){return run(a.c["else"])}else{return null}}}
 }
 
 var world = {}
 
 function run(code){
+
+  if(Array.isArray(code)){
+    return code.map(run)
+  }
   if(!Object.keys(code).includes("action")){return code}
-  if(Array.isArray(code)){return code.map(run)}
   if(Object.keys(funcs).includes(code["action"])){
     code["args"]= Object.keys(code).includes("args")?run(code["args"]):[]
     return funcs[code["action"]]({a:code["args"],w:world,c:code})
   } else if (Object.keys(cffuncs).includes(code["action"])){
-    return cffuncs[code["action"]]({a:code})
+    return cffuncs[code["action"]]({a:code["args"],c:code,w:world})
   }
 }
 
