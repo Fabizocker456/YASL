@@ -15,3 +15,4 @@
     - {action: get, args: ["i"]}
  do:
  - {action: print, args: [{action: get, args: ["i"]}]}
+ - {action: wait, args: [0.001]}
