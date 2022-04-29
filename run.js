@@ -6,7 +6,7 @@ var wait = (s) => {
   while (new Date() - now < 1000 * s) { }
 }
 var funcs = {
-  "wait": a => wait(a.a[0]),
+  "wait": a => {wait(a.a[0]); return a.a[0]},
   "print": a => { console.log(chalk.yellow(a.a.join(''))); return a.a.join('') },
   "raw": a => (a.a[0]),
   "math": a => {
@@ -24,8 +24,8 @@ var funcs = {
     else if (op == "min") { rs = Math.min(...args) }
     else if (op == "max") { rs = Math.max(...args) }
 
-    else if (op == "inv") { rs = 1 / args[0] }
-    else if (op == "neg") { rs = 0 - args[0] }
+    else if (op == "1/") { rs = 1 / args[0] }
+    else if (op == "0-") { rs = 0 - args[0] }
 
     else if (op == "pi") { rs = Math.PI }
     else if (op == "e") { rs = Math.E }
