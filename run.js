@@ -48,7 +48,7 @@ var funcs = {
     else if (op == "&&") { rs = args[0] && args[1] }
     else if (op == "&|") { rs = !args[0] != !args[1] }
 
-    else if(op == "!") { rs = ~args[0] }
+    else if (op == "!") { rs = ~args[0] }
     else if (op == "|") { rs = args[0] | args[1] }
     else if (op == "&") { rs = args[0] & args[1] }
     else if (op == "^") { rs = args[0] ^ args[1] }
@@ -63,14 +63,16 @@ var funcs = {
 
 var cffuncs = {
   "if": a => {
-    if(run(a.c["if"])){
-      if(Object.keys(a.c).includes("do")){
+    if (run(a.c["if"])) {
+      if (Object.keys(a.c).includes("do")) {
         return run(a.c["do"])
-      } else { return null } }
-    else { 
+      } else { return null }
+    }
+    else {
       if (Object.keys(a.c).includes("else")) {
-        return run(a.c["else"]) 
-      } else { return null } }
+        return run(a.c["else"])
+      } else { return null }
+    }
   },
   "for": a => {
     run(a.c["for"][0])
@@ -88,12 +90,12 @@ var cffuncs = {
 var world = {}
 
 function run(code) {
-  if (Array.isArray(code)) {return code.map(run)}
+  if (Array.isArray(code)) { return code.map(run) }
   if (typeof code != "object") { return code }
   code = JSON.parse(JSON.stringify(code))
   code["args"] = Object.keys(code).includes("args") ? run(code["args"]) : []
   if (Object.keys(funcs).includes(code["action"])) {
-    return funcs[code["action"]]({ a: code["args"], c: code, w:world })
+    return funcs[code["action"]]({ a: code["args"], c: code, w: world })
   } else if (Object.keys(cffuncs).includes(code["action"])) {
     return cffuncs[code["action"]]({ a: code["args"], c: code, w: world })
   }
