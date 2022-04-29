@@ -1,0 +1,7 @@
+-
+ action: if
+ cond: {action: raw, args: [true]}
+ if:
+ - {action: print, args: ["ok true"]}
+ else:
+ - {action: print, args: ["not ok false"]}
