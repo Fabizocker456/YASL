@@ -52,6 +52,7 @@ var funcs = {
     else if (op == "|") { rs = args[0] | args[1] }
     else if (op == "&") { rs = args[0] & args[1] }
     else if (op == "^") { rs = args[0] ^ args[1] }
+    else if (op == "?:") { rs = args[0] ? args[1] : args[2] }
     return rs
   },
   "get": a => { return a.w[a.a[0]] },
