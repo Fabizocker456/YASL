@@ -17,19 +17,14 @@ var funcs = {
     else if (op == "-") { rs = args[0] - args[1] }
     else if (op == "*") { rs = args[0] * args[1] }
     else if (op == "/") { rs = args[0] / args[1] }
-
     else if (op == "%") { rs = args[0] % args[1] }
     else if (op == "**") { rs = args[0] ** args[1] }
-
     else if (op == "min") { rs = Math.min(...args) }
     else if (op == "max") { rs = Math.max(...args) }
-
     else if (op == "inv") { rs = 1 / args[0] }
     else if (op == "neg") { rs = 0 - args[0] }
-
     else if (op == "pi") { rs = Math.PI }
     else if (op == "e") { rs = Math.E }
-
     else if (op == "sin") { rs = Math.sin(args[0] / 180 * Math.PI) }
     else if (op == "cos") { rs = Math.cos(args[0] / 180 * Math.PI) }
     else if (op == "tan") { rs = Math.tan(args[0] / 180 * Math.PI) }
@@ -43,11 +38,9 @@ var funcs = {
     else if (op == ">") { rs = args[0] > args[1] }
     else if (op == "<") { rs = args[0] < args[1] }
     else if (op == "!!") { rs = !args[0] }
-
     else if (op == "||") { rs = args[0] || args[1] }
     else if (op == "&&") { rs = args[0] && args[1] }
     else if (op == "&|") { rs = !args[0] != !args[1] }
-
     else if (op == "!") { rs = ~args[0] }
     else if (op == "|") { rs = args[0] | args[1] }
     else if (op == "&") { rs = args[0] & args[1] }
@@ -76,32 +69,40 @@ var cffuncs = {
     }
   },
   "for": a => {
-    run(a.c["for"][0])
-    let repeat = true
-    while (1) {
-      repeat = run(a.c["for"][1])
-      if (repeat) { } else { return }
-      run(a.c["do"])
-      run(a.c["for"][2])
+    for(run(a.c["for"][0]);run(a.c["for"][1]);run(a.c["for"][2])){
+      run(a.c["do"]);
     }
+  },
+  "while": a => {
+    while(run(a.c["while"])){
+      run(a.c["do"])
+    }
+  },
+  "dowhile": a => {
+    do{
+      run(a.c["do"])
+      }while(run(a.c["while"]))
   }
-
 }
-
 var world = {}
-
-function run(code) {
+var deflib = {fun:funcs, cf:cffuncs}
+function run(code, libs=[]) {
+  let lib = deflib
+  for(var i=0;i<libs.length;i++){
+    lib = {fun: {...lib.fun, ...libs[i].fun}, cf: [...lib.cf, ...libs[i].cf]}
+  }
   if (Array.isArray(code)) { return code.map(run) }
   if (typeof code != "object") { return code }
   code = JSON.parse(JSON.stringify(code))
   code["args"] = Object.keys(code).includes("args") ? run(code["args"]) : []
-  if (Object.keys(funcs).includes(code["action"])) {
-    return funcs[code["action"]]({ a: code["args"], c: code, w: world })
-  } else if (Object.keys(cffuncs).includes(code["action"])) {
-    return cffuncs[code["action"]]({ a: code["args"], c: code, w: world })
+  if (Object.keys(lib.fun).includes(code["action"])) {
+    return lib.fun[code["action"]]({ a: code["args"], c: code, w: world })
+  } else if (Object.keys(lib.cf).includes(code["action"])) {
+    return lib.cf[code["action"]]({ a: code["args"], c: code, w: world })
   }
 }
 
 export default {
-  "run": run
+  "run": run,
+  "lib": deflib
 }
