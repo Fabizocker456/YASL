@@ -21,8 +21,8 @@ var funcs = {
     else if (op == "**") { rs = args[0] ** args[1] }
     else if (op == "min") { rs = Math.min(...args) }
     else if (op == "max") { rs = Math.max(...args) }
-    else if (op == "inv") { rs = 1 / args[0] }
-    else if (op == "neg") { rs = 0 - args[0] }
+    else if (op == "1/") { rs = 1 / args[0] }
+    else if (op == "0-") { rs = 0 - args[0] }
     else if (op == "pi") { rs = Math.PI }
     else if (op == "e") { rs = Math.E }
     else if (op == "sin") { rs = Math.sin(args[0] / 180 * Math.PI) }
@@ -48,10 +48,13 @@ var funcs = {
     else if (op == "?:") { rs = args[0] ? args[1] : args[2] }
     return rs
   },
-  "get": a => { return a.w[a.a[0]] },
+  "get": a => { return Object.keys(a.w).includes(a.a[0]) ? a.w[a.a[0]] : null},
   "set": a => { a.w[a.a[0]] = a.a[1]; return a.a[1] },
-  "read": a => (fs.readFileSync(a.a.join(""))),
-  "write": a => (fs.writeFileSync(a.a[0], a.a.slice(1).join("")))
+  "read": a => {return fs.readFileSync(a.a.join(""))},
+  "write": a => {
+    fs.writeFileSync(Array.isArray(a.a[0]) ? a.a[0].join("") : a.a[0], a.a.slice(1).join(""), {encoding: "utf8",flag:"w+"})
+    return Array.isArray(a.a[0]) ? a.a[0].join("") : a.a[0]
+  }
 }
 
 
@@ -81,7 +84,7 @@ var cffuncs = {
   "dowhile": a => {
     do{
       run(a.c["do"])
-      }while(run(a.c["while"]))
+    }while(run(a.c["while"]))
   }
 }
 var world = {}
@@ -89,7 +92,13 @@ var deflib = {fun:funcs, cf:cffuncs}
 function run(code, libs=[]) {
   let lib = deflib
   for(var i=0;i<libs.length;i++){
-    lib = {fun: {...lib.fun, ...libs[i].fun}, cf: [...lib.cf, ...libs[i].cf]}
+    let libt = libs[i]
+    if(Object.keys(libt).includes("fun")){
+      lib.fun = {...lib.fun, ...libt.fun}
+    }
+    if(Object.keys(libt).includes("cf")){
+      lib.cf = {...lib.cf, ...libt.cf}
+    }
   }
   if (Array.isArray(code)) { return code.map(run) }
   if (typeof code != "object") { return code }

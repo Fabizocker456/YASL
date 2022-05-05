@@ -24,12 +24,22 @@
   -
    action: get
    args: [i]
-  - " : "
-  -
-   action: math
+ -
+  action: if
+  if:
+   action: logic
    args:
-   - "sin"
+   - "=="
+   - 0
    -
-    action: get
-    args: [i]
- - {action: wait, args: [0]}
+    action: math
+    args:
+    - "%"
+    -
+     action: get
+     args: ["i"]
+    - 2
+  do:
+  -
+   action: print
+   args: ["."]

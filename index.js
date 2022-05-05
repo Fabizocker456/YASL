@@ -11,4 +11,4 @@ if(loc.endsWith(".json")){
     var file = yml.load(script);
 }
 console.log(chalk.blue("running..."));
-run.run(file,{});
+run.run(file);
