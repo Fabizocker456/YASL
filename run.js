@@ -25,7 +25,7 @@ var funcs = {
 
     else if (op == "1/") { rs = 1 / args[0] }
     else if (op == "0-") { rs = 0 - args[0] }
-    
+      
     else if (op == "pi") { rs = Math.PI }
     else if (op == "e") { rs = Math.E }
     else if (op == "sin") { rs = Math.sin(args[0] / 180 * Math.PI) }
