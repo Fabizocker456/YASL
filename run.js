@@ -54,7 +54,10 @@ var funcs = {
   "write": a => {
     fs.writeFileSync(Array.isArray(a.a[0]) ? a.a[0].join("") : a.a[0], a.a.slice(1).join(""), {encoding: "utf8",flag:"w+"})
     return Array.isArray(a.a[0]) ? a.a[0].join("") : a.a[0]
-  }
+  },
+  "from": a => {return a.a.map(i=>i)},
+  "at": a => {return a.a[0][a.a[1]]},
+  "index": a => {let ret = a.a[0].map(a=>a);ret[a.a[2]]=a.a[1];return ret}
 }
 
 

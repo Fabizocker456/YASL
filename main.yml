@@ -38,7 +38,7 @@
     -
      action: get
      args: ["i"]
-    - 2
+    - 100
   do:
   -
    action: print
